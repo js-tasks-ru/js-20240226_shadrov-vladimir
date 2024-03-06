@@ -6,9 +6,6 @@
  */
 export const omit = (obj, ...fields) => {
   return Object.fromEntries(
-    Object.entries(obj).filter((item) => {
-      const [key] = item;
-      return !fields.includes(key);
-    })
+    Object.entries(obj).filter(([key]) => !fields.includes(key))
   );
 };

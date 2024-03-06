@@ -11,7 +11,6 @@ export function sortStrings(arr, param = "asc") {
 
   if (param === "asc") {
     return [...arr].sort((a, b) => collator.compare(a, b));
-  } else {
-    return [...arr].sort((a, b) => collator.compare(b, a));
   }
+  return [...arr].sort((a, b) => collator.compare(b, a));
 }
