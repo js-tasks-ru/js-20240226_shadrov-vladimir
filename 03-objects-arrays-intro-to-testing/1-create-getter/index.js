@@ -9,12 +9,11 @@ export function createGetter(path) {
   return function (obj) {
     let res = obj;
 
-    for (let key of strArr) {
-      res = res[key];
-
-      if (res === undefined) {
-        break;
+    for (const key of strArr) {
+      if (!res?.hasOwnProperty(key)) {
+        return;
       }
+      res = res[key];
     }
 
     return res;
