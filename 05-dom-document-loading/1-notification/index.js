@@ -9,7 +9,6 @@ export default class NotificationMessage {
     this.message = message;
     this.duration = duration;
     this.type = type;
-    this.containerElement = document.body;
     this.timeout = null;
     this.element = this.createElement(this.createElementTemplate());
   }
@@ -44,11 +43,11 @@ export default class NotificationMessage {
     `);
   }
 
-  show() {
+  show(container = document.body) {
     if (NotificationMessage.lastInstance && NotificationMessage.lastInstance !== this) {
       NotificationMessage.lastInstance.destroy();
     }
-    this.containerElement.append(this.element);
+    container.append(this.element);
     NotificationMessage.lastInstance = this;
     this.timeout = setTimeout(() => (this.destroy()), this.duration);
   }
