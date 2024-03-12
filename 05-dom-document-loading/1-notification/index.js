@@ -9,24 +9,19 @@ export default class NotificationMessage {
     this.message = message;
     this.duration = duration;
     this.type = type;
-    this.timeout = null;
+    this.timerId = null;
     this.element = this.createElement(this.createElementTemplate());
   }
+
   createElement(template) {
     const elementContainer = document.createElement('div');
     elementContainer.innerHTML = template;
     return elementContainer.firstElementChild;
   }
 
-  getElementTypeStyles() {
-    return this.type === 'success'
-      ? 'success'
-      : 'error';
-  }
-
   createElementTemplate() {
     return (`
-      <div class="notification ${this.getElementTypeStyles()}" style="--value:${this.duration * 1.1}ms">
+      <div class="notification ${this.type}" style="--value:${this.duration}ms">
         <div class="timer"></div>
         <div class="inner-wrapper">
           <div class="notification-header">${this.type}</div>
@@ -44,19 +39,19 @@ export default class NotificationMessage {
     }
     container.append(this.element);
     NotificationMessage.lastInstance = this;
-    this.timeout = setTimeout(() => (this.destroy()), this.duration);
+    this.timerId = setTimeout(() => (this.destroy()), this.duration);
   }
 
   hide() {
-    this.removeElement();
+    this.remove();
   }
 
-  removeElement() {
+  remove() {
     this.element.remove();
   }
 
   destroy() {
-    clearTimeout(this.timeout);
+    clearTimeout(this.timerId);
     this.hide();
   }
 }
