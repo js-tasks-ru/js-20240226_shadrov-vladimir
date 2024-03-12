@@ -19,11 +19,6 @@ export default class NotificationMessage {
   }
 
   getElementTypeStyles() {
-    const validTypes = ['success', 'error'];
-
-    if (!validTypes.includes(this.type)) {
-      throw 'В конструктор класса "NotificationMessage" не передан тип уведомления или передан не корректно. Ожидается "success" | "error"';
-    }
     return this.type === 'success'
       ? 'success'
       : 'error';
