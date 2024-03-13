@@ -5,7 +5,7 @@ export default class SortableTable {
     this.element = this.createElement(this.createElementTemplate());
     this.render();
     this.subElements = {
-      header: document.querySelector('[data-element="header"]').children,
+      header: document.querySelector('[data-element="header"]'),
       body: document.querySelector('[data-element="body"]'),
     };
     this.lastHeaderCellIndex = 0;
@@ -108,10 +108,10 @@ export default class SortableTable {
 
   updateHeaderArrowVisibility(currentCellIndex, direction) {
     if (this.lastHeaderCellIndex !== currentCellIndex) {
-      this.subElements.header[this.lastHeaderCellIndex].removeAttribute('data-order');
+      this.subElements.header.children[this.lastHeaderCellIndex].removeAttribute('data-order');
     }
     this.lastHeaderCellIndex = currentCellIndex;
-    this.subElements.header[currentCellIndex].dataset.order = direction;
+    this.subElements.header.children[currentCellIndex].dataset.order = direction;
   }
 
   updateTableBody() {
