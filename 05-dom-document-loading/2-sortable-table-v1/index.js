@@ -93,7 +93,7 @@ export default class SortableTable {
     const headerCellIndex = this.headerConfig.findIndex(item => item.id === field);
     const headerCellData = this.headerConfig[headerCellIndex];
 
-    this.updateHeaderArrowVisibility(this.lastHeaderCellIndex, headerCellIndex, direction);
+    this.updateHeaderArrowVisibility(headerCellIndex, direction);
 
     this.bodyData.sort((a, b) => {
       if (headerCellData.sortType === 'number') {
@@ -111,20 +111,23 @@ export default class SortableTable {
     this.updateTableBody();
   }
 
-  updateHeaderArrowVisibility(lastCellIndex, currentCellIndex, direction) {
-    if (lastCellIndex !== currentCellIndex) {
-      this.subElements.header[lastCellIndex].removeAttribute('data-order');
+  updateHeaderArrowVisibility(currentCellIndex, direction) {
+    if (this.lastHeaderCellIndex !== currentCellIndex) {
+      this.subElements.header[this.lastHeaderCellIndex].removeAttribute('data-order');
     }
-    lastCellIndex = currentCellIndex;
+    this.lastHeaderCellIndex = currentCellIndex;
     this.subElements.header[currentCellIndex].dataset.order = direction;
   }
 
   updateTableBody() {
     const bodyElement = document.querySelector('[data-element="body"]');
     bodyElement.innerHTML = this.bodyData.map(rowData => this.createBodyRowTemplate(rowData)).join('');
+    this.updateBodyElementChildren(bodyElement.children);
   }
 
-
+  updateBodyElementChildren(children) {
+    this.subElements.body = children;
+  }
 
   render(container = document.body) {
     container.append(this.element);
