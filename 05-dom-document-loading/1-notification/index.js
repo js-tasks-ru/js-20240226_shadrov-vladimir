@@ -42,16 +42,12 @@ export default class NotificationMessage {
     this.timerId = setTimeout(() => (this.destroy()), this.duration);
   }
 
-  hide() {
-    this.remove();
-  }
-
   remove() {
     this.element.remove();
   }
 
   destroy() {
     clearTimeout(this.timerId);
-    this.hide();
+    this.remove();
   }
 }
