@@ -6,7 +6,7 @@ export default class SortableTable {
     this.render();
     this.subElements = {
       header: document.querySelector('[data-element="header"]').children,
-      body: document.querySelector('[data-element="body"]').children
+      body: document.querySelector('[data-element="body"]'),
     };
     this.lastHeaderCellIndex = 0;
   }
@@ -122,11 +122,6 @@ export default class SortableTable {
   updateTableBody() {
     const bodyElement = document.querySelector('[data-element="body"]');
     bodyElement.innerHTML = this.bodyData.map(rowData => this.createBodyRowTemplate(rowData)).join('');
-    this.updateBodyElementChildren(bodyElement.children);
-  }
-
-  updateBodyElementChildren(children) {
-    this.subElements.body = children;
   }
 
   render(container = document.body) {
