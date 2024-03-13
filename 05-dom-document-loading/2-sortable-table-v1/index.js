@@ -14,8 +14,12 @@ export default class SortableTable {
     return (`
       <div data-element="productsContainer" class="products-list__container">
         <div class="sortable-table">
-          ${this.createHeaderTemplate()}
-          ${this.createBodyTemplate()}
+          <div data-element="header" class="sortable-table__header sortable-table__row">
+            ${this.createHeaderTemplate()}
+          </div>
+          <div data-element="body" class="sortable-table__body">
+            ${this.createBodyTemplate()}
+          </div>
         </div>
       </div>
     `);
@@ -28,15 +32,11 @@ export default class SortableTable {
   }
 
   createHeaderTemplate() {
-    return (`
-      <div data-element="header" class="sortable-table__header sortable-table__row">
-        ${this.createHeaderRowTemplate(this.headerConfig)}
-      </div>
-    `);
+    return this.createHeaderRowTemplate(this.headerConfig);
   }
 
   createHeaderRowTemplate(headerData) {
-    return ` ${headerData.map(item => this.createHeaderCellTemplate(item)).join('')} `;
+    return headerData.map(item => this.createHeaderCellTemplate(item)).join('');
   }
 
   createHeaderCellTemplate(cellData) {
@@ -56,17 +56,15 @@ export default class SortableTable {
       </span>
     `;
 
-    return isSortable
-      ? arrowTemplate
-      : '';
+    if (!isSortable) {
+      return '';
+    }
+
+    return arrowTemplate;
   }
 
   createBodyTemplate() {
-    return (`
-        <div data-element="body" class="sortable-table__body">
-          ${this.bodyData.map(rowData => this.createBodyRowTemplate(rowData)).join('')}
-        </div>
-      `);
+    return this.bodyData.map(rowData => this.createBodyRowTemplate(rowData)).join('');
   }
 
   createBodyRowTemplate(rowData) {
@@ -75,8 +73,6 @@ export default class SortableTable {
           ${this.headerConfig.map(config => this.createBodyCellTemplate(config, rowData)).join('')}
         </a>
       `;
-
-
   }
 
   createBodyCellTemplate(config, rowData) {
@@ -87,7 +83,6 @@ export default class SortableTable {
       <div class="sortable-table__cell">${rowData[config.id]}</div>
     `;
   }
-
 
   sort(field, direction) {
     const headerCellIndex = this.headerConfig.findIndex(item => item.id === field);
@@ -102,8 +97,8 @@ export default class SortableTable {
           : b[field] - a[field];
       } else {
         return direction === 'asc'
-          ? a[field].localeCompare(b[field])
-          : b[field].localeCompare(a[field]);
+          ? a[field].localeCompare(b[field], ["ru", "en"])
+          : b[field].localeCompare(a[field], ["ru", "en"]);
       }
 
     });
@@ -120,8 +115,7 @@ export default class SortableTable {
   }
 
   updateTableBody() {
-    const bodyElement = document.querySelector('[data-element="body"]');
-    bodyElement.innerHTML = this.bodyData.map(rowData => this.createBodyRowTemplate(rowData)).join('');
+    this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 
   render(container = document.body) {
