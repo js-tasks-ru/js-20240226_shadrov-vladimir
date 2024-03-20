@@ -15,19 +15,6 @@ export default class SortableTableV2 extends SortableTableV1 {
     super.sort(sorted.id, sorted.order);
   }
 
-  headerPointerdownHandler = (event) => {
-    const headerCellElement = event.target.closest('[data-sortable="true"]');
-
-    if (!headerCellElement) {
-      return;
-    }
-
-    const id = headerCellElement.dataset.id;
-    const order = headerCellElement.dataset.order === 'asc' ? 'desc' : 'asc';
-
-    super.sort(id, order);
-  };
-
   sortOnClient() {
     // @TODO
   }
@@ -52,9 +39,10 @@ export default class SortableTableV2 extends SortableTableV1 {
     }
 
     const id = headerCellElement.dataset.id;
-    const order = headerCellElement.dataset.order === 'asc' ? 'desc' : 'asc';
+    this.sorted.order = this.sorted.order === 'asc' ? 'desc' : 'asc';
+    headerCellElement.dataset.order = this.sorted.order;
 
-    super.sort(id, order);
+    super.sort(id, this.sorted.order);
   };
 
   createEventListeners() {
