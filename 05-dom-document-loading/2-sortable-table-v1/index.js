@@ -42,7 +42,7 @@ export default class SortableTable {
   createHeaderCellTemplate(cellData) {
     const { id, title, sortable } = cellData;
     return (`
-      <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}" >
+      <div class="sortable-table__cell" data-id="${id}" data-sortable="${sortable}">
         <span>${title}</span>
         ${this.createArrowTemplate(sortable)}
       </div>
@@ -50,17 +50,15 @@ export default class SortableTable {
   }
 
   createArrowTemplate(isSortable) {
-    const arrowTemplate = `
-      <span data-element="arrow" class="sortable-table__sort-arrow">
-        <span class="sort-arrow"></span>
-      </span>
-    `;
-
     if (!isSortable) {
       return '';
     }
 
-    return arrowTemplate;
+    return `
+      <span data-element="arrow" class="sortable-table__sort-arrow">
+        <span class="sort-arrow"></span>
+      </span>
+    `;
   }
 
   createBodyTemplate() {
