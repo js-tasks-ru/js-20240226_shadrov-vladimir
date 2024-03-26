@@ -10,8 +10,8 @@ export default class DoubleSlider {
     this.max = max;
     this.formatValue = formatValue;
     this.selected = {
-      from: selected.from || min,
-      to: selected.to || max
+      from: selected.from ?? min,
+      to: selected.to ?? max
     };
     this.element = this.createElement(this.createElementTemplate());
     this.leftSlider = this.element.querySelector('.range-slider__thumb-left');
@@ -22,7 +22,6 @@ export default class DoubleSlider {
     this.innerElement = this.element.querySelector('.range-slider__inner');
     this.direction = null;
     this.activeSlider = null;
-    this.offsetX = null;
 
     this.createEventListeners();
   }
@@ -71,28 +70,25 @@ export default class DoubleSlider {
   };
 
   thumbPointerMoveHandler = (event) => {
-    const innerElementRect = this.innerElement.getBoundingClientRect();
+    const { left, width } = this.innerElement.getBoundingClientRect();
 
-    if (!innerElementRect.width) {
-      return;
+    const pointerX = event.clientX;
+    const right = left + width;
+    const range = this.max - this.min;
+    const normalizedPointerX = Math.min(right, Math.max(left, pointerX));
+    const percentPointerX = Math.round((normalizedPointerX - left) / width * 100);
+
+
+    if (this.direction === 'left') {
+      this.selected.from = Math.min(this.selected.to, this.min + ((this.max - this.min) * percentPointerX) / 100);
+    } else {
+      this.selected.to = Math.max(this.selected.from, this.min + ((this.max - this.min) * percentPointerX) / 100);
     }
 
-    const leftSliderPosition = (event.clientX - innerElementRect[this.direction] + this.offsetX) / innerElementRect.width * 100;
-    const minLeft = this.rightSlider.offsetLeft / innerElementRect.width * 100;
-    const rightSliderPositon = (innerElementRect[this.direction] - event.clientX - this.offsetX) / innerElementRect.width * 100;
-    const maxRight = (innerElementRect.width - this.leftSlider.offsetLeft - this.leftSlider.clientWidth) / innerElementRect.width * 100;
+    const percent = this.direction === 'left'
+      ? (this.selected.from - this.min) / range * 100
+      : (this.max - this.selected.to) / range * 100;
 
-    let percent = this.direction === 'left'
-      ? Math.min(leftSliderPosition, minLeft)
-      : Math.min(rightSliderPositon, maxRight);
-
-    if (percent <= 0) {
-      percent = 0;
-    } else if (percent > 100) {
-      percent = 100;
-    }
-
-    this.setSelectedRange(percent);
     this.updateView(percent);
     this.setBoundaryValues();
   };
@@ -105,16 +101,6 @@ export default class DoubleSlider {
   updateView(percent) {
     this.activeSlider.style[this.direction] = `${percent}%`;
     this.rangeProgressElement.style[this.direction] = `${percent}%`;
-  }
-
-  setSelectedRange(percent) {
-    const range = this.max - this.min;
-
-    if (this.direction === 'left') {
-      this.selected.from = Math.round(this.min + (range * percent / 100));
-    } else {
-      this.selected.to = Math.round(this.max - (range * percent / 100));
-    }
   }
 
   thumbPointerUpHandler = () => {
@@ -137,4 +123,5 @@ export default class DoubleSlider {
     this.destroyEventListeners();
     this.remove();
   }
-};
+}
+
