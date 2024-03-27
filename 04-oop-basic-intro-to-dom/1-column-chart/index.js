@@ -15,6 +15,9 @@ export default class ColumnChart {
     this.link = link;
     this.formatHeading = formatHeading;
     this.element = this.createElement(this.createTemplate());
+    this.subElements = {
+      body: this.element.querySelector('[data-element="body"]'),
+    };
   }
 
   createLinkTemplate() {
@@ -72,8 +75,7 @@ export default class ColumnChart {
 
   update(newData) {
     this.data = newData;
-    document.querySelector('[data-element="body"]').innerHTML =
-      this.createChartBarsTemplate();
+    this.subElements.body.innerHTML = this.createChartBarsTemplate();
   }
 
   remove() {
@@ -82,9 +84,5 @@ export default class ColumnChart {
 
   destroy() {
     this.remove();
-  }
-
-  get element() {
-    return this.element;
   }
 }
