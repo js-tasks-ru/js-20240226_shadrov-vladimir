@@ -9,9 +9,10 @@ export default class ColumnChartV2 extends ColumnChartV1 {
     range = {},
     label = '',
     link = '',
+    value = 0,
     formatHeading = (value) => value,
   } = {}) {
-    super({ label, link, formatHeading });
+    super({ label, link, formatHeading, value });
     this.from = range?.from;
     this.to = range?.to;
     this.url = url;
