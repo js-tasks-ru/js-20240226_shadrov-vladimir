@@ -17,12 +17,12 @@ export default class ColumnChartV2 extends ColumnChartV1 {
     this.to = range?.to;
     this.url = url;
 
-    this.element.classList.add('column-chart_loading');
     this.update(this.from, this.to);
   }
 
 
   async update(from, to) {
+    this.element.classList.add('column-chart_loading');
     const data = await this.fetchData(from, to);
     super.update(Object.values(data));
     this.element.classList.remove('column-chart_loading');
