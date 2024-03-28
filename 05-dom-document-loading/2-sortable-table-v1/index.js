@@ -105,6 +105,10 @@ export default class SortableTable {
   }
 
   updateHeaderArrowVisibility(currentCellIndex, direction) {
+    if (currentCellIndex === -1) {
+      return;
+    }
+
     if (this.lastHeaderCellIndex !== currentCellIndex) {
       this.subElements.header.children[this.lastHeaderCellIndex].removeAttribute('data-order');
     }
