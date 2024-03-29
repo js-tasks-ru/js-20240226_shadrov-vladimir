@@ -19,13 +19,13 @@ export default class SortableTableV2 extends SortableTableV1 {
     super.sort(id, order);
   }
 
-  sortOnServer() { console.log('On server sort'); }
+  sortOnServer(id, order) { console.log('On server sort'); }
 
   sort() {
     if (this.isSortLocally) {
       this.sortOnClient(this.sorted.id, this.sorted.order);
     } else {
-      this.sortOnServer();
+      this.sortOnServer(this.sorted.id, this.sorted.order);
     }
   }
 

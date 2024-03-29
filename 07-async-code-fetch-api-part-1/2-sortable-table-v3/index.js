@@ -7,10 +7,13 @@ export default class SortableTableV3 extends SortableTableV2 {
   constructor(headersConfig, {
     url = '',
     isSortLocally = false,
+    sorted = {}
   } = {}) {
     super(headersConfig);
     this.headerConfig = headersConfig;
     this.url = url;
+    this.sorted.id = sorted.id || 'title';
+    this.sorted.order = sorted.order || 'asc';
     this.isDataLoading = false;
     this.isSortLocally = isSortLocally;
     this.fetchParams = {
@@ -20,15 +23,22 @@ export default class SortableTableV3 extends SortableTableV2 {
       startDefault: 0, // Для сортировки на сервере
     };
 
-    this.renderTable();
+    this.render();
     this.createLoadDataisteners();
-
   }
 
-  async renderTable() {
+
+  async render() {
+    super.render();
+
+    if (!this.sorted || !this.url) {
+      return;
+    }
+
     const { loadStartPosition, loadEndPosition } = this.fetchParams;
     this.bodyData = await this.loadTableData(loadStartPosition, loadEndPosition);
     this.updateTableBody();
+    this.updateHeaderArrowVisibility();
   }
 
   sortOnClient(id, order) {
@@ -36,10 +46,11 @@ export default class SortableTableV3 extends SortableTableV2 {
   }
 
   async sortOnServer(id, order) {
-    const headerCellIndex = this.headerConfig.findIndex(item => item.id === id);
-    this.bodyData = await this.loadTableData(this.fetchParams.startDefault, this.bodyData.length || this.fetchParams.loadEndPosition);
+    this.bodyData = await this.loadTableData(this.fetchParams.startDefault, this.bodyData.length);
     super.updateTableBody();
-    this.updateHeaderArrowVisibility(headerCellIndex, order);
+    this.updateHeaderArrowVisibility();
+    this.sorted.id = id;
+    this.sorted.order = order;
   }
 
   sort() {
@@ -50,6 +61,14 @@ export default class SortableTableV3 extends SortableTableV2 {
     }
   }
 
+  updateHeaderArrowVisibility() {
+    const headerCellIndex = this.headerConfig.findIndex(item => item.id === this.sorted.id);
+
+    if (headerCellIndex === -1) {
+      return;
+    }
+    super.updateHeaderArrowVisibility(headerCellIndex, this.sorted.order);
+  }
 
   createLoadDataisteners() {
     window.addEventListener('scroll', this.windowScrollHandler);
@@ -70,6 +89,8 @@ export default class SortableTableV3 extends SortableTableV2 {
       }
 
       this.isDataLoading = true;
+      this.fetchParams.loadStartPosition = this.fetchParams.loadEndPosition;
+      this.fetchParams.loadEndPosition = this.fetchParams.loadEndPosition + this.fetchParams.loadCount;
       const newRowData = await this.loadTableData(this.fetchParams.loadStartPosition, this.fetchParams.loadEndPosition);
       if (!newRowData.length) {
         this.isDataLoading = false;
@@ -78,8 +99,6 @@ export default class SortableTableV3 extends SortableTableV2 {
       this.bodyData = [...this.bodyData, ...newRowData];
       this.subElements.body.append(this.createNewTableRows(newRowData));
       this.isDataLoading = false;
-      this.fetchParams.loadStartPosition = this.fetchParams.end;
-      this.fetchParams.end = this.fetchParams.end + this.fetchParams.loadCount;
     }
 
   };
@@ -96,15 +115,24 @@ export default class SortableTableV3 extends SortableTableV2 {
   }
 
   async loadTableData(start, end) {
+    this.subElements.loading.style.display = 'block';
+    this.subElements.emptyPlaceholder.style.display = 'none';
+
     const url = this.createUrl(start, end);
     const tableData = await fetchJson(url);
+
+    if (!tableData.length) {
+      this.subElements.emptyPlaceholder.style.display = 'block';
+    }
+
+    this.subElements.loading.style.display = 'none';
     return tableData;
   }
 
   createUrl(start, end) {
     const url = new URL(this.url, BACKEND_URL);
-    url.searchParams.set('_sort', this.sorted.id ?? 'title');
-    url.searchParams.set('_order', this.sorted.order ?? 'asc');
+    url.searchParams.set('_sort', this.sorted.id);
+    url.searchParams.set('_order', this.sorted.order);
     url.searchParams.set('_start', start);
     url.searchParams.set('_end', end);
     return url;
