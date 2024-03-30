@@ -37,7 +37,7 @@ export default class SortableTableV2 extends SortableTableV1 {
     }
 
     this.sorted.id = headerCellElement.dataset.id;
-    this.sorted.order = headerCellElement.dataset.order === 'asc' ? 'desc' : 'asc';
+    this.sorted.order = headerCellElement.dataset.order === 'desc' ? 'asc' : 'desc';
     headerCellElement.dataset.order = this.sorted.order;
 
     this.sort();

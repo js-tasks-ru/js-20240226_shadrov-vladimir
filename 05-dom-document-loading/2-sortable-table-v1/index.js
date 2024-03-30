@@ -94,20 +94,17 @@ export default class SortableTable {
 
     this.updateHeaderArrowVisibility(headerCellIndex, direction);
 
+    const k = direction === 'asc' ? 1 : -1;
+
     this.bodyData.sort((a, b) => {
       if (headerCellData.sortType === 'number') {
-        return direction === 'asc'
-          ? a[field] - b[field]
-          : b[field] - a[field];
+        return k * (a[field] - b[field]);
       } else {
-        return direction === 'asc'
-          ? a[field].localeCompare(b[field], ["ru", "en"])
-          : b[field].localeCompare(a[field], ["ru", "en"]);
+        return k * a[field].localeCompare(b[field], ["ru", "en"]);
       }
-
     });
 
-    this.updateTableBody();
+    this.updateTableBodyContent();
   }
 
   updateHeaderArrowVisibility(currentCellIndex, direction) {
@@ -122,7 +119,7 @@ export default class SortableTable {
     this.subElements.header.children[currentCellIndex].dataset.order = direction;
   }
 
-  updateTableBody() {
+  updateTableBodyContent() {
     this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 

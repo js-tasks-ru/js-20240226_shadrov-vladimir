@@ -37,7 +37,7 @@ export default class SortableTableV3 extends SortableTableV2 {
 
     const { loadStartPosition, loadEndPosition } = this.fetchParams;
     this.bodyData = await this.loadTableData(loadStartPosition, loadEndPosition);
-    this.updateTableBody();
+    this.updateTableBodyContent();
     this.updateHeaderArrowVisibility();
   }
 
@@ -47,7 +47,7 @@ export default class SortableTableV3 extends SortableTableV2 {
 
   async sortOnServer(id, order) {
     this.bodyData = await this.loadTableData(this.fetchParams.startDefault, this.bodyData.length);
-    super.updateTableBody();
+    super.updateTableBodyContent();
     this.updateHeaderArrowVisibility();
     this.sorted.id = id;
     this.sorted.order = order;
