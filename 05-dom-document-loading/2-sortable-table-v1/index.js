@@ -4,11 +4,10 @@ export default class SortableTable {
     this.bodyData = data;
     this.element = this.createElement(this.createElementTemplate());
     this.render();
-    this.subElements = {
-      header: document.querySelector('[data-element="header"]'),
-      body: document.querySelector('[data-element="body"]'),
-    };
+    this.subElements = {};
     this.lastHeaderCellIndex = 0;
+
+    this.getSubElements();
   }
   createElementTemplate() {
     return (`
@@ -19,6 +18,13 @@ export default class SortableTable {
           </div>
           <div data-element="body" class="sortable-table__body">
             ${this.createBodyTemplate()}
+          </div>
+          <div data-element="loading" class="loading-line sortable-table__loading-line"></div>
+          <div data-element="emptyPlaceholder" class="sortable-table__empty-placeholder">
+            <div>
+              <p>No products satisfies your filter criteria</p>
+              <button type="button" class="button-primary-outline">Reset all filters</button>
+            </div>
           </div>
         </div>
       </div>
@@ -88,23 +94,24 @@ export default class SortableTable {
 
     this.updateHeaderArrowVisibility(headerCellIndex, direction);
 
+    const k = direction === 'asc' ? 1 : -1;
+
     this.bodyData.sort((a, b) => {
       if (headerCellData.sortType === 'number') {
-        return direction === 'asc'
-          ? a[field] - b[field]
-          : b[field] - a[field];
+        return k * (a[field] - b[field]);
       } else {
-        return direction === 'asc'
-          ? a[field].localeCompare(b[field], ["ru", "en"])
-          : b[field].localeCompare(a[field], ["ru", "en"]);
+        return k * a[field].localeCompare(b[field], ["ru", "en"]);
       }
-
     });
 
-    this.updateTableBody();
+    this.updateTableBodyContent();
   }
 
   updateHeaderArrowVisibility(currentCellIndex, direction) {
+    if (currentCellIndex === -1) {
+      return;
+    }
+
     if (this.lastHeaderCellIndex !== currentCellIndex) {
       this.subElements.header.children[this.lastHeaderCellIndex].removeAttribute('data-order');
     }
@@ -112,13 +119,21 @@ export default class SortableTable {
     this.subElements.header.children[currentCellIndex].dataset.order = direction;
   }
 
-  updateTableBody() {
+  updateTableBodyContent() {
     this.subElements.body.innerHTML = this.createBodyTemplate();
   }
 
   render(container = document.body) {
     container.append(this.element);
   }
+
+  getSubElements() {
+    const elements = this.element.querySelectorAll('[data-element]');
+    for (const element of elements) {
+      this.subElements[element.dataset.element] = element;
+    }
+  }
+
 
   remove() {
     this.element.remove();

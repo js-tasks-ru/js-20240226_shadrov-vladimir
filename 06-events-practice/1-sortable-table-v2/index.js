@@ -15,19 +15,17 @@ export default class SortableTableV2 extends SortableTableV1 {
     super.sort(sorted.id, sorted.order);
   }
 
-  sortOnClient() {
-    // @TODO
+  sortOnClient(id, order) {
+    super.sort(id, order);
   }
 
-  sortOnServer() {
-    // @TODO
-  }
+  sortOnServer(id, order) { console.log('On server sort'); }
 
   sort() {
     if (this.isSortLocally) {
-      this.sortOnClient();
+      this.sortOnClient(this.sorted.id, this.sorted.order);
     } else {
-      this.sortOnServer();
+      this.sortOnServer(this.sorted.id, this.sorted.order);
     }
   }
 
@@ -38,11 +36,11 @@ export default class SortableTableV2 extends SortableTableV1 {
       return;
     }
 
-    const id = headerCellElement.dataset.id;
-    this.sorted.order = this.sorted.order === 'asc' ? 'desc' : 'asc';
+    this.sorted.id = headerCellElement.dataset.id;
+    this.sorted.order = headerCellElement.dataset.order === 'desc' ? 'asc' : 'desc';
     headerCellElement.dataset.order = this.sorted.order;
 
-    super.sort(id, this.sorted.order);
+    this.sort();
   };
 
   createEventListeners() {
