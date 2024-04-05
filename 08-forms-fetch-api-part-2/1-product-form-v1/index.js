@@ -18,9 +18,9 @@ export default class ProductForm {
   }
 
   async render() {
-    const [productData, categoriesData] = await Promise.all([
+    const [categoriesData, productData] = await Promise.all([
+      this.fetchData(this.categoryUrl, this.categoryParams),
       this.fetchData(this.productUrl, this.productParams),
-      this.fetchData(this.categoryUrl, this.categoryParams)
     ]);
 
     this.element = this.createElement(this.createElementTemplate(productData[0], categoriesData));
